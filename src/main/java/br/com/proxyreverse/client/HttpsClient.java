@@ -15,43 +15,19 @@ public class HttpsClient {
 
 	private static List<String> targetURL = new ArrayList<String>();
 
-	static {
-		// for localhost testing only
-		javax.net.ssl.HttpsURLConnection.setDefaultHostnameVerifier(new javax.net.ssl.HostnameVerifier() {
-
-			public boolean verify(String hostname, javax.net.ssl.SSLSession sslSession) {
-				if (hostname.equals("localhost")) {
-					return true;
-				}
-				return false;
-			}
-		});
-	}
-
-	/**
-	 * 
-	 */
-	public HttpsClient() {
-		// TODO Auto-generated constructor stub
-	}
-
-	/**
-	 * @param args
-	 */
 	public static void main(String[] args) {
-		targetURL.add("https://www.goodreads.com/book/show/18734728-enterprise-integration-with-wso2-esb?from_search=true");
+		targetURL.add(
+				"https://www.goodreads.com/book/show/18734728-enterprise-integration-with-wso2-esb?from_search=true");
 		targetURL.add("https://www.liferay.com/it/products/liferay-portal/overview");
 		targetURL.add("https://crm-shiruslabs.dontesta.it:8443/SugarEnt-Full-7.1.0/");
 
 		for (String httpURL : targetURL) {
 			HttpsURLConnection connection = null;
 			try {
-				// Create connection
 				System.out.println("Try to connect to the URL " + httpURL + " ...");
 				URL url = new URL(httpURL);
 				connection = (HttpsURLConnection) url.openConnection();
 
-				// Create a SSL SocketFactory
 				SSLSocketFactory sslSocketFactory = getFactorySimple();
 				connection.setSSLSocketFactory(sslSocketFactory);
 
@@ -69,17 +45,14 @@ public class HttpsClient {
 					if (certificate instanceof X509Certificate) {
 						X509Certificate x509cert = (X509Certificate) certificate;
 
-						// Get subject
 						Principal principal = x509cert.getSubjectDN();
 						System.out.println("Certificate Subject DN " + principal.getName());
 
-						// Get issuer
 						principal = x509cert.getIssuerDN();
 						System.out.println("Certificate IssuerDn " + principal.getName());
 					}
 				}
 
-				// Close Connection
 				connection.disconnect();
 
 			} catch (Exception e) {
