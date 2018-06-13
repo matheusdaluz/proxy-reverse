@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.cert.X509Certificate;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import br.com.proxyreverse.utils.ApplicationProperties;
 import sun.security.tools.keytool.CertAndKeyGen;
 import sun.security.x509.X500Name;
@@ -13,6 +15,8 @@ import sun.security.x509.X500Name;
 public class KeyStoreManager {
 
 	public static KeyStoreManager instace;
+	@Autowired
+	ApplicationProperties properties;
 
 	public static synchronized KeyStoreManager getInstance() {
 		if (instace == null)
@@ -22,7 +26,7 @@ public class KeyStoreManager {
 
 	public KeyStore createKeyStore() throws Exception {
 		
-		ApplicationProperties properties = new ApplicationProperties();
+	
 		File file = new File(properties.getPathKeyStore());
 
 		KeyStore keyStore = KeyStore.getInstance("JKS");

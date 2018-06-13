@@ -1,23 +1,21 @@
 package br.com.proxyreverse.utils;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.stereotype.Component;
 
-@Configuration
-@PropertySource("classpath:application.properties")
+@Component
+@ConfigurationProperties("app")
 public class ApplicationProperties {
 
-	@Autowired
-	private Environment env;
+	 
+	private String pathKeyStore;
 
 	public String getPathKeyStore() {
-		return env.getProperty("keystore");
+		return pathKeyStore;
 	}
 
-	public String getPathCertificados() {
-		return env.getProperty("certificados");
+	public void setPathKeyStore(String pathKeyStore) {
+		this.pathKeyStore = pathKeyStore;
 	}
 
 }
