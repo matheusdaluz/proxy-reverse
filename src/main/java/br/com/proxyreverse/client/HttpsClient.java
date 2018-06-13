@@ -16,11 +16,9 @@ public class HttpsClient {
 	private static List<String> targetURL = new ArrayList<String>();
 
 	public static void main(String[] args) {
-		targetURL.add(
-				"https://www.goodreads.com/book/show/18734728-enterprise-integration-with-wso2-esb?from_search=true");
-		targetURL.add("https://www.liferay.com/it/products/liferay-portal/overview");
-		targetURL.add("https://crm-shiruslabs.dontesta.it:8443/SugarEnt-Full-7.1.0/");
-
+		targetURL.add("https://www.google.com");
+		
+		
 		for (String httpURL : targetURL) {
 			HttpsURLConnection connection = null;
 			try {
