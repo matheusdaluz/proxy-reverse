@@ -1,4 +1,4 @@
-package br.com.proxyreverse.expection;
+package br.com.proxyreverse.exception;
 
 public class ValidadeCertificateException extends Exception {
 
