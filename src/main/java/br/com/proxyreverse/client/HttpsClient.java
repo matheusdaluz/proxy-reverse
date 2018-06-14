@@ -14,6 +14,9 @@ import org.cryptacular.util.CertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import br.com.proxyreverse.exception.ValidadeCertificateException;
+import br.com.proxyreverse.manager.KeyStoreManager;
+
 public class HttpsClient {
 
 	private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);
@@ -33,14 +36,20 @@ public class HttpsClient {
 
 			Certificate[] serverCertificate = connection.getServerCertificates();
 
+			if (serverCertificate.length == 0) {
+				logger.error("Nenhum certificado encontrado.");
+			}
+
 			for (Certificate certificate : serverCertificate) {
 
 				if (certificate instanceof X509Certificate) {
 					X509Certificate x509cert = (X509Certificate) certificate;
 					listHostname.add(CertUtil.subjectCN(x509cert));
 				}
+
 			}
 
+			Certificate cert = KeyStoreManager.verifyCertificate(listHostname);
 			connection.disconnect();
 
 		} catch (Exception e) {
