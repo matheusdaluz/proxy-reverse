@@ -24,7 +24,7 @@ public class HttpsClient {
 	public static void main(String[] args) {
 
 		HttpsURLConnection connection = null;
-		List<String> listHostname = new ArrayList<String>();
+		List<String> listAlias = new ArrayList<String>();
 
 		try {
 			URL url = new URL("https://twitter.com/");
@@ -44,12 +44,12 @@ public class HttpsClient {
 
 				if (certificate instanceof X509Certificate) {
 					X509Certificate x509cert = (X509Certificate) certificate;
-					listHostname.add(CertUtil.subjectCN(x509cert));
+					listAlias.add(CertUtil.subjectCN(x509cert));
 				}
 
 			}
 
-			Certificate cert = KeyStoreManager.verifyCertificate(listHostname);
+			Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
 			connection.disconnect();
 
 		} catch (Exception e) {
