@@ -4,19 +4,11 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
-import java.security.cert.X509Certificate;
-
-import org.springframework.beans.factory.annotation.Autowired;
-
-import br.com.proxyreverse.utils.ApplicationProperties;
-import sun.security.tools.keytool.CertAndKeyGen;
-import sun.security.x509.X500Name;
+import java.util.List;
 
 public class KeyStoreManager {
 
 	public static KeyStoreManager instace;
-	@Autowired
-	ApplicationProperties properties;
 
 	public static synchronized KeyStoreManager getInstance() {
 		if (instace == null)
@@ -25,29 +17,24 @@ public class KeyStoreManager {
 	}
 
 	public KeyStore createKeyStore() throws Exception {
-		
-	
-		File file = new File(properties.getPathKeyStore());
+
+		File file = new File("globoDesafioKey");
 
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		if (file.exists()) {
-			keyStore.load(new FileInputStream(file), "123456".toCharArray());
+			keyStore.load(new FileInputStream(file), "globodesafio".toCharArray());
 		} else {
 			keyStore.load(null, null);
-			keyStore.store(new FileOutputStream(file), "123456".toCharArray());
+			keyStore.store(new FileOutputStream(file), "globodesafio".toCharArray());
 		}
 		return keyStore;
 	}
 
-	public void includeCertificate() throws Exception {
+	public Boolean verifyCertificate(List<String> listAlias) throws Exception {
 
-		CertAndKeyGen certGen = new CertAndKeyGen("RSA", "SHA256WithRSA", null);
-		certGen.generate(2048);
-		long validSecs = (long) 365 * 24 * 60 * 60;
-		X509Certificate cert = certGen.getSelfCertificate(new X500Name("CN=My Application,O=My Organisation,L=My City,C=DE"), validSecs);
+		KeyStore keystore = KeyStoreManager.getInstance().createKeyStore();
 
-		KeyStore keyStore = KeyStoreManager.getInstance().createKeyStore();
-		keyStore.setKeyEntry("tomcat", certGen.getPrivateKey(), null, new X509Certificate[] { cert });
+		return true;
 	}
 
 }
