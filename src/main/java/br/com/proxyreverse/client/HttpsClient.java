@@ -1,7 +1,6 @@
 package br.com.proxyreverse.client;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -18,26 +17,28 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.cryptacular.util.CertUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.com.proxyreverse.manager.KeyStoreManager;
 
 @WebServlet(urlPatterns = "")
 public class HttpsClient extends HttpServlet {
-
+	
+	private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);	
 	private static final long serialVersionUID = 6644332178282070109L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		makeConnectionAndValidate(request.getRequestURL().toString(), response);
+		makeConnectionAndValidate(request.getRequestURL().toString());
 	}
 
-	public void makeConnectionAndValidate(String path, HttpServletResponse response) throws IOException {
+	public void makeConnectionAndValidate(String path) throws IOException {
 		HttpsURLConnection connection = null;
 		List<String> listAlias = new ArrayList<String>();
-		PrintWriter writer = response.getWriter();
-
+	
 		try {
 			URL url = new URL(path);
 			connection = (HttpsURLConnection) url.openConnection();
@@ -49,7 +50,7 @@ public class HttpsClient extends HttpServlet {
 			Certificate[] serverCertificate = connection.getServerCertificates();
 
 			if (serverCertificate.length == 0) {
-				writer.println("Nenhum certificado encontrado.");
+				logger.info("Nenhum certificado encontrado.");
 			}
 
 			for (Certificate certificate : serverCertificate) {
@@ -61,16 +62,16 @@ public class HttpsClient extends HttpServlet {
 
 			}
 
-			Certificate cert = KeyStoreManager.verifyCertificate(listAlias, writer);
+			Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
 			connection.disconnect();
 
 		} catch (ClassCastException e) {
-			writer.println("permito apenas requests https.");
+			logger.error("permito apenas requests https.");
 		} catch (Exception e) {
 			if (connection != null) {
 				connection.disconnect();
 			}
-			writer.println(e.getMessage());
+			logger.error(e.getMessage());
 		}
 	}
 
