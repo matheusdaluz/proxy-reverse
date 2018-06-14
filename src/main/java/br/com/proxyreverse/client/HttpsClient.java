@@ -1,5 +1,7 @@
 package br.com.proxyreverse.client;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -9,25 +11,35 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.cryptacular.util.CertUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import br.com.proxyreverse.exception.ValidadeCertificateException;
 import br.com.proxyreverse.manager.KeyStoreManager;
 
-public class HttpsClient {
+@WebServlet(urlPatterns = "")
+public class HttpsClient extends HttpServlet {
 
-	private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);
+	private static final long serialVersionUID = 6644332178282070109L;
 
-	public static void main(String[] args) {
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 
+		makeConnectionAndValidate(request.getRequestURL().toString(), response);
+	}
+
+	public void makeConnectionAndValidate(String path, HttpServletResponse response) throws IOException {
 		HttpsURLConnection connection = null;
 		List<String> listAlias = new ArrayList<String>();
+		PrintWriter writer = response.getWriter();
 
 		try {
-			URL url = new URL("https://twitter.com/");
+			URL url = new URL(path);
 			connection = (HttpsURLConnection) url.openConnection();
 			connection.connect();
 
@@ -37,7 +49,7 @@ public class HttpsClient {
 			Certificate[] serverCertificate = connection.getServerCertificates();
 
 			if (serverCertificate.length == 0) {
-				logger.error("Nenhum certificado encontrado.");
+				writer.println("Nenhum certificado encontrado.");
 			}
 
 			for (Certificate certificate : serverCertificate) {
@@ -49,15 +61,21 @@ public class HttpsClient {
 
 			}
 
-			Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
+			Certificate cert = KeyStoreManager.verifyCertificate(listAlias, writer);
 			connection.disconnect();
 
+		} catch (ClassCastException e) {
+			writer.println("permito apenas requests https.");
 		} catch (Exception e) {
 			if (connection != null) {
 				connection.disconnect();
 			}
-			logger.error(e.getMessage());
+			writer.println(e.getMessage());
 		}
+	}
+
+	public static void main(String[] args) {
+
 	}
 
 	private static SSLSocketFactory getFactory() throws Exception {

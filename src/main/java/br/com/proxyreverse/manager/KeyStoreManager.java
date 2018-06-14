@@ -3,18 +3,13 @@ package br.com.proxyreverse.manager;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.PrintWriter;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import br.com.proxyreverse.client.HttpsClient;
-
 public class KeyStoreManager {
 
-	private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);
 	public static KeyStoreManager instace;
 
 	public static synchronized KeyStoreManager getInstance() {
@@ -37,7 +32,7 @@ public class KeyStoreManager {
 		return keyStore;
 	}
 
-	public static Certificate verifyCertificate(List<String> listAlias) throws Exception {
+	public static Certificate verifyCertificate(List<String> listAlias, PrintWriter writer) throws Exception {
 
 		KeyStore keystore = KeyStoreManager.getInstance().createKeyStore();
 		Certificate cert = null;
@@ -46,7 +41,7 @@ public class KeyStoreManager {
 			if (keystore.containsAlias(alias)) {
 				cert = keystore.getCertificate(alias);
 			} else {
-				logger.error("Certificado não permitido.");
+				writer.println("Certificado não permitido.");
 			}
 		}
 
