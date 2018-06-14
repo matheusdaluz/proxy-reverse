@@ -18,7 +18,7 @@ public class KeyStoreManager {
 
 	public KeyStore createKeyStore() throws Exception {
 
-		File file = new File("globoDesafioKey");
+		File file = new File("KeyStore");
 
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		if (file.exists()) {
