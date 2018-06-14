@@ -74,10 +74,6 @@ public class HttpsClient extends HttpServlet {
 		}
 	}
 
-	public static void main(String[] args) {
-
-	}
-
 	private static SSLSocketFactory getFactory() throws Exception {
 		SSLContext context = SSLContext.getInstance("SSL");
 		context.init(null, null, null);
