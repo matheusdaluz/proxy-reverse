@@ -24,21 +24,21 @@ import br.com.proxyreverse.manager.KeyStoreManager;
 
 @WebServlet(urlPatterns = "")
 public class HttpsClient extends HttpServlet {
-	
-	private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);	
+
+	private static final Logger logger = LoggerFactory.getLogger(HttpsClient.class);
 	private static final long serialVersionUID = 6644332178282070109L;
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		makeConnectionAndValidate(request.getRequestURL().toString());
+		makeConnectionAndValidate(request.getRequestURL().toString(), response);
 	}
 
-	public void makeConnectionAndValidate(String path) throws IOException {
+	public void makeConnectionAndValidate(String path, HttpServletResponse response) throws IOException {
 		HttpsURLConnection connection = null;
 		List<String> listAlias = new ArrayList<String>();
-	
+
 		try {
 			URL url = new URL(path);
 			connection = (HttpsURLConnection) url.openConnection();
@@ -62,7 +62,9 @@ public class HttpsClient extends HttpServlet {
 
 			}
 
-			Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
+			X509Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
+
+			response.sendRedirect(CertUtil.subjectCN(cert));
 			connection.disconnect();
 
 		} catch (ClassCastException e) {

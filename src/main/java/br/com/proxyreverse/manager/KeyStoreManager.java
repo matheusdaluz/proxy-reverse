@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
 import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -23,9 +24,9 @@ public class KeyStoreManager {
 
 	public KeyStore createKeyStore() throws Exception {
 
-		File file = new File("KeyStore");
+		File file = new File("keystore.p12");
 
-		KeyStore keyStore = KeyStore.getInstance("JKS");
+		KeyStore keyStore = KeyStore.getInstance("PKCS12");
 		if (file.exists()) {
 			keyStore.load(new FileInputStream(file), "globodesafio".toCharArray());
 		} else {
@@ -35,14 +36,14 @@ public class KeyStoreManager {
 		return keyStore;
 	}
 
-	public static Certificate verifyCertificate(List<String> listAlias) throws Exception {
+	public static X509Certificate verifyCertificate(List<String> listAlias) throws Exception {
 
 		KeyStore keystore = KeyStoreManager.getInstance().createKeyStore();
-		Certificate cert = null;
+		X509Certificate cert = null;
 
 		for (String alias : listAlias) {
 			if (keystore.containsAlias(alias)) {
-				cert = keystore.getCertificate(alias);
+				cert = (X509Certificate) keystore.getCertificate(alias);
 				logger.info("Certificado validado;");
 			} else {
 				logger.warn("Certificado não permitido.");
