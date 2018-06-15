@@ -81,7 +81,7 @@ public class HttpsClient extends HttpServlet {
 				makeMessageError(401, response, writer, "Certificado não permitido.");
 			} else {
 				response.setStatus(301);
-				redirectToServer("https://www.google.com", response);
+				redirectToServer(CertUtil.subjectCN(cert), response);
 			}
 
 			connection.disconnect();
@@ -115,7 +115,7 @@ public class HttpsClient extends HttpServlet {
 
 	private void redirectToServer(String serverName, HttpServletResponse response) {
 		try {
-			response.sendRedirect(serverName);
+			response.sendRedirect("https://" + serverName);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
