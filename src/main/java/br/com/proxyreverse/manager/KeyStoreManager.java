@@ -46,7 +46,7 @@ public class KeyStoreManager {
 		for (String alias : listAlias) {
 			if (keystore.containsAlias(alias)) {
 				cert = (X509Certificate) keystore.getCertificate(alias);
-				logger.info("Certificado validado;");
+				logger.info("Certificado validado:" + cert.getIssuerX500Principal());
 				return cert;
 			} else {
 				logger.warn("Certificado não permitido.");

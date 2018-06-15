@@ -37,13 +37,7 @@ public class HttpsClient extends HttpServlet {
 		PrintWriter writer = response.getWriter();
 		String path = request.getParameter("path");
 
-		if (path.isEmpty()) {
-			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
-		}
-
-		if (invalidUrl(path)) {
-			makeMessageError(400, response, writer, "Problema na url(Somente são aceitos request https).");
-		}
+		validatePath(path, response, writer);
 
 		makeConnectionAndValidate(request.getRequestURL().toString(), response, path, writer);
 	}
@@ -55,6 +49,7 @@ public class HttpsClient extends HttpServlet {
 
 		try {
 			URL url = new URL(caminho);
+
 			connection = (HttpsURLConnection) url.openConnection();
 
 			SSLSocketFactory sslSocketFactory = getFactory();
@@ -127,4 +122,18 @@ public class HttpsClient extends HttpServlet {
 		print.close();
 	}
 
+	private void validatePath(String path, HttpServletResponse response, PrintWriter writer) {
+
+		if (path == null) {
+			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
+		}
+
+		if (path.isEmpty()) {
+			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
+		}
+
+		if (invalidUrl(path)) {
+			makeMessageError(400, response, writer, "Problema na url(Somente são aceitos request https).");
+		}
+	}
 }
