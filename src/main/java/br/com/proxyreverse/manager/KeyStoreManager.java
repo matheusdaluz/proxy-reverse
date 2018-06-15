@@ -11,9 +11,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class KeyStoreManager {
-	
-	private static final Logger logger = LoggerFactory.getLogger(KeyStoreManager.class);	
+
+	private static final Logger logger = LoggerFactory.getLogger(KeyStoreManager.class);
 	public static KeyStoreManager instace;
+	private final String nameFile = "keystore.p12";
+	private final String typeKey = "PKCS12";
+	private final String password = "globodesafio";
 
 	public static synchronized KeyStoreManager getInstance() {
 		if (instace == null)
@@ -23,14 +26,14 @@ public class KeyStoreManager {
 
 	public KeyStore createKeyStore() throws Exception {
 
-		File file = new File("keystore.p12");
+		File file = new File(nameFile);
 
-		KeyStore keyStore = KeyStore.getInstance("PKCS12");
+		KeyStore keyStore = KeyStore.getInstance(typeKey);
 		if (file.exists()) {
-			keyStore.load(new FileInputStream(file), "globodesafio".toCharArray());
+			keyStore.load(new FileInputStream(file), password.toCharArray());
 		} else {
 			keyStore.load(null, null);
-			keyStore.store(new FileOutputStream(file), "globodesafio".toCharArray());
+			keyStore.store(new FileOutputStream(file), password.toCharArray());
 		}
 		return keyStore;
 	}
