@@ -31,22 +31,23 @@ public class HttpsClient extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-
-		makeConnectionAndValidate(request.getRequestURL().toString(), response);
+		String path = request.getParameter("path");
+		makeConnectionAndValidate(request.getRequestURL().toString(), response, path);
 	}
 
-	public void makeConnectionAndValidate(String path, HttpServletResponse response) throws IOException {
+	public void makeConnectionAndValidate(String path, HttpServletResponse response, String caminho) throws IOException {
 		HttpsURLConnection connection = null;
 		List<String> listAlias = new ArrayList<String>();
 
 		try {
-			URL url = new URL(path);
+			URL url = new URL(caminho);
 			connection = (HttpsURLConnection) url.openConnection();
-			connection.connect();
 
 			SSLSocketFactory sslSocketFactory = getFactory();
 			connection.setSSLSocketFactory(sslSocketFactory);
-
+			
+			connection.connect();
+			
 			Certificate[] serverCertificate = connection.getServerCertificates();
 
 			if (serverCertificate.length == 0) {
@@ -64,7 +65,7 @@ public class HttpsClient extends HttpServlet {
 
 			X509Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
 
-			response.sendRedirect(CertUtil.subjectCN(cert));
+			response.sendRedirect("https://www.google.com");
 			connection.disconnect();
 
 		} catch (ClassCastException e) {

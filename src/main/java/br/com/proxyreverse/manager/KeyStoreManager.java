@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.security.KeyStore;
-import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
 import java.util.List;
 
@@ -45,6 +44,7 @@ public class KeyStoreManager {
 			if (keystore.containsAlias(alias)) {
 				cert = (X509Certificate) keystore.getCertificate(alias);
 				logger.info("Certificado validado;");
+				return cert;
 			} else {
 				logger.warn("Certificado não permitido.");
 			}
