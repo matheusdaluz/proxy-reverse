@@ -1,6 +1,7 @@
 package br.com.proxyreverse.client;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.URL;
 import java.security.cert.Certificate;
 import java.security.cert.X509Certificate;
@@ -16,6 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.validator.routines.UrlValidator;
 import org.cryptacular.util.CertUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,11 +33,25 @@ public class HttpsClient extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
+		PrintWriter writer = response.getWriter();
 		String path = request.getParameter("path");
-		makeConnectionAndValidate(request.getRequestURL().toString(), response, path);
+
+		if (path.isEmpty()) {
+			response.setStatus(400);
+			writer.println("O parametro é obrigatorio.");
+		}
+
+		if (invalidUrl(path)) {
+			response.setStatus(400);
+			writer.println("Problema na url.");
+		}
+
+		makeConnectionAndValidate(request.getRequestURL().toString(), response, path, writer);
 	}
 
-	public void makeConnectionAndValidate(String path, HttpServletResponse response, String caminho) throws IOException {
+	public void makeConnectionAndValidate(String path, HttpServletResponse response, String caminho, PrintWriter writer)
+			throws IOException {
 		HttpsURLConnection connection = null;
 		List<String> listAlias = new ArrayList<String>();
 
@@ -45,31 +61,35 @@ public class HttpsClient extends HttpServlet {
 
 			SSLSocketFactory sslSocketFactory = getFactory();
 			connection.setSSLSocketFactory(sslSocketFactory);
-			
+
 			connection.connect();
-			
+
 			Certificate[] serverCertificate = connection.getServerCertificates();
 
 			if (serverCertificate.length == 0) {
-				logger.info("Nenhum certificado encontrado.");
+				response.setStatus(204);
+				writer.println("Nenhum certificado encontrado.");
 			}
 
 			for (Certificate certificate : serverCertificate) {
-
 				if (certificate instanceof X509Certificate) {
 					X509Certificate x509cert = (X509Certificate) certificate;
 					listAlias.add(CertUtil.subjectCN(x509cert));
 				}
-
 			}
 
 			X509Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
 
-			response.sendRedirect("https://www.google.com");
+			if (cert == null) {
+				response.setStatus(401);
+				writer.println("Certificado não permitido.");
+			} else {
+				response.setStatus(301);
+				redirectToServer("https://www.google.com", response);
+			}
+
 			connection.disconnect();
 
-		} catch (ClassCastException e) {
-			logger.error("permito apenas requests https.");
 		} catch (Exception e) {
 			if (connection != null) {
 				connection.disconnect();
@@ -78,10 +98,31 @@ public class HttpsClient extends HttpServlet {
 		}
 	}
 
-	private static SSLSocketFactory getFactory() throws Exception {
+	private SSLSocketFactory getFactory() throws Exception {
 		SSLContext context = SSLContext.getInstance("SSL");
 		context.init(null, null, null);
 		return context.getSocketFactory();
+	}
+
+	private Boolean invalidUrl(String url) {
+
+		String[] schemes = { "https" };
+		UrlValidator urlValidator = new UrlValidator(schemes);
+
+		if (urlValidator.isValid(url)) {
+			return false;
+		} else {
+			return true;
+		}
+
+	}
+
+	private void redirectToServer(String serverName, HttpServletResponse response) {
+		try {
+			response.sendRedirect(serverName);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
