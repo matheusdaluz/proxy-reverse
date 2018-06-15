@@ -38,13 +38,11 @@ public class HttpsClient extends HttpServlet {
 		String path = request.getParameter("path");
 
 		if (path.isEmpty()) {
-			response.setStatus(400);
-			writer.println("O parametro é obrigatorio.");
+			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
 		}
 
 		if (invalidUrl(path)) {
-			response.setStatus(400);
-			writer.println("Problema na url.");
+			makeMessageError(400, response, writer, "Problema na url(Somente são aceitos request https).");
 		}
 
 		makeConnectionAndValidate(request.getRequestURL().toString(), response, path, writer);
@@ -67,8 +65,7 @@ public class HttpsClient extends HttpServlet {
 			Certificate[] serverCertificate = connection.getServerCertificates();
 
 			if (serverCertificate.length == 0) {
-				response.setStatus(204);
-				writer.println("Nenhum certificado encontrado.");
+				makeMessageError(204, response, writer, "Nenhum certificado encontrado.");
 			}
 
 			for (Certificate certificate : serverCertificate) {
@@ -81,8 +78,7 @@ public class HttpsClient extends HttpServlet {
 			X509Certificate cert = KeyStoreManager.verifyCertificate(listAlias);
 
 			if (cert == null) {
-				response.setStatus(401);
-				writer.println("Certificado não permitido.");
+				makeMessageError(401, response, writer, "Certificado não permitido.");
 			} else {
 				response.setStatus(301);
 				redirectToServer("https://www.google.com", response);
@@ -123,6 +119,12 @@ public class HttpsClient extends HttpServlet {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void makeMessageError(Integer status, HttpServletResponse response, PrintWriter print, String mensagem) {
+		response.setStatus(status);
+		print.println(mensagem);
+		print.close();
 	}
 
 }
