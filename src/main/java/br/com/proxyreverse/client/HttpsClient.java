@@ -39,7 +39,11 @@ public class HttpsClient extends HttpServlet {
 
 		validatePath(path, response, writer);
 
-		makeConnectionAndValidate(request.getRequestURL().toString(), response, path, writer);
+		if (request.getRequestURL().toString().equals("https://localhost:8483/") && path == null) {
+			return;
+		} else {
+			makeConnectionAndValidate(request.getRequestURL().toString(), response, path, writer);
+		}
 	}
 
 	public void makeConnectionAndValidate(String path, HttpServletResponse response, String caminho, PrintWriter writer)
@@ -61,6 +65,8 @@ public class HttpsClient extends HttpServlet {
 
 			if (serverCertificate.length == 0) {
 				makeMessageError(204, response, writer, "Nenhum certificado encontrado.");
+				connection.disconnect();
+				return;
 			}
 
 			for (Certificate certificate : serverCertificate) {
@@ -120,20 +126,24 @@ public class HttpsClient extends HttpServlet {
 		response.setStatus(status);
 		print.println(mensagem);
 		print.close();
+
 	}
 
 	private void validatePath(String path, HttpServletResponse response, PrintWriter writer) {
 
 		if (path == null) {
 			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
+			return;
 		}
 
 		if (path.isEmpty()) {
 			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
+			return;
 		}
 
 		if (invalidUrl(path)) {
 			makeMessageError(400, response, writer, "Problema na url(Somente são aceitos request https).");
+			return;
 		}
 	}
 }
