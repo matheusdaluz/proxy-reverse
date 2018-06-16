@@ -37,9 +37,11 @@ public class HttpsClient extends HttpServlet {
 		PrintWriter writer = response.getWriter();
 		String path = request.getParameter("path");
 
-		validatePath(path, response, writer);
+		if (!validatePath(path, response, writer)) {
+			return;
+		}
 
-		if (request.getRequestURL().toString().equals("https://localhost:8483/") && path == null) {
+		if ((request.getRequestURL().toString().equals("https://localhost:8483/") && path == null)) {
 			return;
 		} else {
 			makeConnectionAndValidate(request.getRequestURL().toString(), response, path, writer);
@@ -129,21 +131,23 @@ public class HttpsClient extends HttpServlet {
 
 	}
 
-	private void validatePath(String path, HttpServletResponse response, PrintWriter writer) {
+	private Boolean validatePath(String path, HttpServletResponse response, PrintWriter writer) {
 
 		if (path == null) {
 			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
-			return;
+			return false;
 		}
 
 		if (path.isEmpty()) {
 			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
-			return;
+			return false;
 		}
 
 		if (invalidUrl(path)) {
 			makeMessageError(400, response, writer, "Problema na url(Somente são aceitos request https).");
-			return;
+			return false;
 		}
+
+		return true;
 	}
 }
