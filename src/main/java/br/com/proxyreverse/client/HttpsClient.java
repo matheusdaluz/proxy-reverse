@@ -120,6 +120,7 @@ public class HttpsClient extends HttpServlet {
 		response.setStatus(status);
 		print.println(mensagem);
 		print.close();
+	    return;
 	}
 
 	private void validatePath(String path, HttpServletResponse response, PrintWriter writer) {
