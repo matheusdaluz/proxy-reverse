@@ -8,19 +8,19 @@ proxy HTTPS reverso simples (multi certificados) que aceita requests de clientes
 
 # Como usar
 
-1 - importar o projeto no eclipse ou spring tool suite.
+1 - Importar o projeto no eclipse ou spring tool suite.
 
-2 - dar um update maven no projeto para instalar as biblietas do pom.xml
+2 - Dar um update maven no projeto para instalar as biblietas do pom.xml
 
-3 :
+3 : Rodando o projeto.
 	
 	- Para rodar no spring tool suite: run as -> spring boot app
 	
 	- Para rodar no eclipse: spring-boot:run
 	
-4 - a porta usada é a 8483	
+4 - A porta usada é a 8483	
 
-5 - exemplo de requisicão(deverá ter paramentro ?path= ): 
+5 - Exemplo de requisicão(deverá ter paramentro ?path= ): 
 
 	o certificado da url do parametro será validaddo e se for o certificado permitido vai ser mandado para o backend server,
 	se o certificado não for válido ou sem parametro vai aparecer uma mensagem de erro.
