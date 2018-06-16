@@ -27,9 +27,9 @@ proxy HTTPS reverso simples (multi certificados) que aceita requests de clientes
 	o certificado da url do parametro será validaddo e se for o certificado permitido vai ser mandado para o backend server,
 	se o certificado não for válido ou sem parametro vai aparecer uma mensagem de erro.
 	
-	https://localhost:8483/?path=https://www.globo.com -> vai para uma aplicacao em node (https://talentosglobo.herokuapp.com/)
+	https://localhost:8483/?path=https://www.globo.com -> vai para uma aplicacao em node (https://globo-com.herokuapp.com/)
 	
-	https://localhost:8483/?path=https://talentos.globo.com - vai para uma aplicacao em python (https://globo-com.herokuapp.com/)
+	https://localhost:8483/?path=https://talentos.globo.com - vai para uma aplicacao em python (https://talentosglobo.herokuapp.com/)
 
 6 - O KeyStore se encontra dentro do projeto:
 		
