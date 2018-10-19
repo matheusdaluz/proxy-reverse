@@ -33,7 +33,40 @@ public class HttpsClient extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		requestSniCore(request, response);
+	}
 
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		requestSniCore(request, response);
+	}
+
+	@Override
+	protected void doPut(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		requestSniCore(request, response);
+	}
+
+	@Override
+	protected void doOptions(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		requestSniCore(request, response);
+	}
+
+	@Override
+	protected void doHead(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		requestSniCore(request, response);
+	}
+
+	@Override
+	protected void doDelete(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		requestSniCore(request, response);
+	}
+
+	private void requestSniCore(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		PrintWriter writer = response.getWriter();
 		String path = request.getParameter("path");
 
@@ -133,12 +166,7 @@ public class HttpsClient extends HttpServlet {
 
 	private Boolean validatePath(String path, HttpServletResponse response, PrintWriter writer) {
 
-		if (path == null) {
-			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
-			return false;
-		}
-
-		if (path.isEmpty()) {
+		if (path == null || path.isEmpty()) {
 			makeMessageError(400, response, writer, "O parametro é obrigatorio.");
 			return false;
 		}
